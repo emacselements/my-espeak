@@ -175,4 +175,4 @@
     (setq normalized (replace-regexp-in-string "ﬆ" "st" normalized))
     normalized))
 
-(provide 'espeak)
+(provide 'my-espeak)
