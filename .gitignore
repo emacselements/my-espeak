@@ -1,0 +1,8 @@
+# Backup files
+*.bak
+*.bak.*
+*~
+*#
+
+# History directory
+.history/
