@@ -106,9 +106,10 @@
 (defun read-aloud-with-edge-tts (text)
   "Read text using Edge TTS - silent operation."
   (let* ((cleaned-text (read-aloud-clean-text-enhanced text))
-         (enhanced-text (read-aloud-enhance-punctuation-spacing cleaned-text))
+         (enhanced-text cleaned-text)
          (temp-file "/tmp/edge_test.wav")
-         (voice "en-US-JennyNeural")
+         (voice "en-GB-RyanNeural")
+         ;; (voice "en-ZA-LeahNeural")
          (player (read-aloud-get-audio-player))
          (edge-tts-bin (or (executable-find "edge-tts")
                           (expand-file-name "~/.local/bin/edge-tts"))))
@@ -171,15 +172,13 @@
   "Replace common ligatures and special characters with ASCII equivalents.
 Remove text in square brackets (e.g., [A], [C], [200]).
 Remove superscript numbers after periods (footnote references).
-Remove standalone numbers that appear in the middle of text."
+Keep ordinary numbers in the text."
   (let ((normalized text))
     ;; Remove text in square brackets
     (setq normalized (replace-regexp-in-string "\\[[^]]*\\]" "" normalized))
     ;; Remove footnote references after periods and commas (both regular and superscript numbers)
     (setq normalized (replace-regexp-in-string "\\.\\([0-9⁰¹²³⁴⁵⁶⁷⁸⁹]+\\)" "." normalized))
     (setq normalized (replace-regexp-in-string ",\\([0-9⁰¹²³⁴⁵⁶⁷⁸⁹]+\\)" "," normalized))
-    ;; Remove standalone numbers (surrounded by spaces or at word boundaries)
-    (setq normalized (replace-regexp-in-string "\\b[0-9]+\\b" "" normalized))
     ;; Replace ligatures
     (setq normalized (replace-regexp-in-string "ﬃ" "ffi" normalized))
     (setq normalized (replace-regexp-in-string "ﬁ" "fi" normalized))

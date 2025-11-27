@@ -6,3 +6,18 @@
 
 # History directory
 .history/
+
+# Experimental packages (not ready for release)
+my-espeak-three.el
+my-new-espeak.el
+pdf-ocr-espeak.el
+
+# Experimental documentation
+README-new-espeak.md
+RECORD-YOUR-VOICE.md
+VOICE-CLONING.md
+
+# Experimental scripts
+chatterbox-tts.py
+install-chatterbox.sh
+record-my-voice.sh
