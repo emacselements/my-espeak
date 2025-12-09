@@ -1,11 +1,11 @@
 # my-espeak
 
-Text-to-speech integration for Emacs using eSpeak and Edge TTS.
+Text-to-speech integration for Emacs using eSpeak and Google TTS (gTTS).
 
 ## Features
 
 - **eSpeak Integration** - Fast, lightweight text-to-speech (F9)
-- **Edge TTS Integration** - Higher quality neural voices (F10)
+- **Google TTS (gTTS)** - Higher quality cloud voices (F10)
 - **PDF Support** - Read PDF text aloud from cursor or selection
 - **Smart Text Processing** - Handles hyphenated words, ligatures, and footnotes
 - **Toggle Controls** - Easy start/stop with keyboard shortcuts
@@ -30,18 +30,18 @@ Text-to-speech integration for Emacs using eSpeak and Edge TTS.
 **Required:**
 - `espeak` - For basic text-to-speech
 
-**Optional:**
-- `edge-tts` - For higher quality voices (install via `pip install edge-tts`)
-- Audio player: `paplay`, `ffplay`, `mplayer`, `vlc`, or `aplay`
+**Optional / Fancy (recommended):**
+- `gTTS` (Google Text-to-Speech CLI) - High-quality cloud voices. Install via `pip install gTTS`.
+- Audio player: `paplay`, `ffplay`, `mplayer`, `vlc`, or `aplay` (one of these is required for audio playback)
 
 ## Usage
 
 ### Basic Commands
 
 - `F9` - Toggle eSpeak reading (fast, lightweight)
-- `F10` - Toggle Edge TTS reading (higher quality)
+- `F10` - Toggle Fancy reading (Google TTS/gTTS) (higher quality)
 
-Both commands read from cursor position or selected text in any buffer, including PDFs.
+Both commands read from cursor position or selected text in any buffer, including PDFs. The fancy option uses `gtts-cli` by default; if `gtts-cli` is not available the code will fall back to `espeak`.
 
 ## Optional: PDF OCR-Based Reading
 
@@ -79,32 +79,39 @@ The OCR functionality depends on [screenshot-ocr](https://github.com/emacselemen
 ### OCR Commands (in pdf-view-mode)
 
 - `O` - Select region with mouse, OCR it, read with eSpeak
-- `C-c O` - Select region with mouse, OCR it, read with Edge TTS
+- `C-c o` - Select region with mouse, OCR it, read with Google TTS (gTTS)
 
 These commands let you visually select a region (including single columns in multi-column layouts), then OCR and read that specific area.
 
 ## Configuration
 
-### Customize eSpeak Settings
+### TTS Options
 
-```elisp
-;; Example: Change voice speed
-(defun read-aloud-from-cursor-espeak ()
-  "Read aloud with custom speed."
-  (interactive)
-  (let ((text (read-aloud-get-text)))
-    (when (and text (not (string-empty-p (string-trim text))))
-      (start-process "espeak-process" nil "/usr/bin/espeak"
-                     "-s" "200"  ; Adjust speed (default: 180)
-                     "-v" "en"   ; Change voice/language
-                     text))))
+- `F9` (default): eSpeak — fast, offline, lightweight.
+- `F10` (fancy): Google TTS (`gtts-cli`) — higher-quality cloud voices; requires internet.
+
+If you prefer offline neural or male voices, consider `festival` (install via package manager) or `spd-say`/`flite` for alternatives.
+
+### Example: Ensure `gtts-cli` is available
+
+Install the Python package and test from a terminal:
+
+```bash
+pip install --user gTTS
+gtts-cli "Hello world" --output /tmp/test_gtts.mp3
+paplay /tmp/test_gtts.mp3
 ```
+
+### Notes
+
+- `gtts-cli` sends requests to Google's TTS service and requires network connectivity.
+- For long texts that exceed online TTS service limits, the code may split or fall back to `espeak`.
 
 ## How It Works
 
 1. **Text Extraction** - Gets text from cursor/selection or entire PDF page
 2. **Text Cleaning** - Joins hyphenated words, removes ligatures and footnotes
-3. **Speech Synthesis** - Sends to eSpeak or Edge TTS
+3. **Speech Synthesis** - Sends to eSpeak, gTTS, or other configured TTS engine
 4. **Playback** - Reads aloud with progress tracking
 
 ## Author
