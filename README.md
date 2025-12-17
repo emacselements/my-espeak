@@ -1,11 +1,11 @@
 # my-espeak
 
-Text-to-speech integration for Emacs using eSpeak and Google TTS (gTTS).
+Text-to-speech integration for Emacs using eSpeak and Piper (neural TTS).
 
 ## Features
 
 - **eSpeak Integration** - Fast, lightweight text-to-speech (F9)
-- **Google TTS (gTTS)** - Higher quality cloud voices (F10)
+- **Piper TTS** - High-quality neural voices, offline and fast (F10)
 - **PDF Support** - Read PDF text aloud from cursor or selection
 - **Smart Text Processing** - Handles hyphenated words, ligatures, and footnotes
 - **Toggle Controls** - Easy start/stop with keyboard shortcuts
@@ -31,17 +31,18 @@ Text-to-speech integration for Emacs using eSpeak and Google TTS (gTTS).
 - `espeak` - For basic text-to-speech
 
 **Optional / Fancy (recommended):**
-- `gTTS` (Google Text-to-Speech CLI) - High-quality cloud voices. Install via `pip install gTTS`.
-- Audio player: `paplay`, `ffplay`, `mplayer`, `vlc`, or `aplay` (one of these is required for audio playback)
+- `piper-tts` - Modern neural TTS with natural voices. Install via `pip install --user piper-tts`.
+- Voice model - Download automatically on first use or manually from [Piper voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US)
+- Audio player: `paplay`, `ffplay`, `mplayer`, `vlc`, or `aplay` (one of these is required)
 
 ## Usage
 
 ### Basic Commands
 
 - `F9` - Toggle eSpeak reading (fast, lightweight)
-- `F10` - Toggle Fancy reading (Google TTS/gTTS) (higher quality)
+- `F10` - Toggle Fancy reading (Piper neural TTS) (natural-sounding, offline)
 
-Both commands read from cursor position or selected text in any buffer, including PDFs. The fancy option uses `gtts-cli` by default; if `gtts-cli` is not available the code will fall back to `espeak`.
+Both commands read from cursor position or selected text in any buffer, including PDFs. The fancy option uses Piper for modern neural voices with natural pronunciation and no network dependency.
 
 ## Optional: PDF OCR-Based Reading
 
@@ -79,7 +80,7 @@ The OCR functionality depends on [screenshot-ocr](https://github.com/emacselemen
 ### OCR Commands (in pdf-view-mode)
 
 - `O` - Select region with mouse, OCR it, read with eSpeak
-- `C-c o` - Select region with mouse, OCR it, read with Google TTS (gTTS)
+- `C-c o` - Select region with mouse, OCR it, read with Piper TTS
 
 These commands let you visually select a region (including single columns in multi-column layouts), then OCR and read that specific area.
 
@@ -88,30 +89,37 @@ These commands let you visually select a region (including single columns in mul
 ### TTS Options
 
 - `F9` (default): eSpeak — fast, offline, lightweight.
-- `F10` (fancy): Google TTS (`gtts-cli`) — higher-quality cloud voices; requires internet.
+- `F10` (fancy): Piper — modern neural TTS with natural-sounding voices; completely offline.
 
-If you prefer offline neural or male voices, consider `festival` (install via package manager) or `spd-say`/`flite` for alternatives.
+For other options, consider `festival` or `spd-say` for alternatives.
 
-### Example: Ensure `gtts-cli` is available
+### Example: Setup Piper TTS
 
-Install the Python package and test from a terminal:
+Install Piper and download a voice model:
 
 ```bash
-pip install --user gTTS
-gtts-cli "Hello world" --output /tmp/test_gtts.mp3
-paplay /tmp/test_gtts.mp3
+pip install --user piper-tts
+
+# Download a natural voice model
+mkdir -p ~/.local/share/piper/voices
+cd ~/.local/share/piper/voices
+wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx
+wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+
+# Test it
+echo "Hello world" | python3 -m piper -m en_US-lessac-medium.onnx -f /tmp/test.wav && paplay /tmp/test.wav
 ```
 
 ### Notes
 
-- `gtts-cli` sends requests to Google's TTS service and requires network connectivity.
+- Piper is completely offline and uses modern neural networks for natural-sounding speech.
 - For long texts that exceed online TTS service limits, the code may split or fall back to `espeak`.
 
 ## How It Works
 
 1. **Text Extraction** - Gets text from cursor/selection or entire PDF page
 2. **Text Cleaning** - Joins hyphenated words, removes ligatures and footnotes
-3. **Speech Synthesis** - Sends to eSpeak, gTTS, or other configured TTS engine
+3. **Speech Synthesis** - Sends to eSpeak, Piper, or other configured TTS engine
 4. **Playback** - Reads aloud with progress tracking
 
 ## Author

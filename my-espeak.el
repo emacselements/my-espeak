@@ -104,25 +104,32 @@
     enhanced))
 
 (defun read-aloud-with-gtts (text)
-  "Read text using Google TTS."
+  "Read text using Piper TTS with neural voices."
   (let* ((cleaned-text (read-aloud-clean-text-enhanced text))
-         (temp-file "/tmp/gtts_output.mp3")
+         (temp-file "/tmp/piper_output.wav")
+         (voice-model (expand-file-name "~/.local/share/piper/voices/en_US-lessac-medium.onnx"))
          (player (read-aloud-get-audio-player)))
-    (let ((exit-code (call-process "gtts-cli" nil nil nil
-                                   cleaned-text
-                                   "--output" temp-file)))
-      (if (and (= exit-code 0) (file-exists-p temp-file))
-          (progn
-            (setq read-aloud-process
-                  (start-process "audio-player" "*audio-player*" player temp-file))
-            (set-process-sentinel
-             read-aloud-process
-             (lambda (proc event)
-               (when (string-match "finished\\|exited" event)
-                 (setq my/reading-aloud nil)
-                 (when (file-exists-p temp-file)
-                   (delete-file temp-file))))))
-        (error "Google TTS failed with exit code %s" exit-code)))))
+    (when (and read-aloud-process (process-live-p read-aloud-process))
+      (kill-process read-aloud-process))
+    (with-temp-buffer
+      (insert cleaned-text)
+      (let ((exit-code (call-process-region (point-min) (point-max)
+                                            "python3" nil nil nil
+                                            "-m" "piper"
+                                            "-m" voice-model
+                                            "-f" temp-file)))
+        (if (and (= exit-code 0) (file-exists-p temp-file))
+            (progn
+              (setq read-aloud-process
+                    (start-process "audio-player" "*audio-player*" player temp-file))
+              (set-process-sentinel
+               read-aloud-process
+               (lambda (proc event)
+                 (when (string-match "finished\\|exited" event)
+                   (setq my/reading-aloud nil)
+                   (when (file-exists-p temp-file)
+                     (delete-file temp-file))))))
+          (error "Piper TTS failed with exit code %s" exit-code))))))
 
 (defun read-aloud-get-audio-player ()
   "Find the best available audio player."
@@ -135,7 +142,7 @@
    (t (error "No audio player found"))))
 
 (defun read-aloud-from-cursor-fancy ()
-  "Read aloud from the cursor position using Google TTS."
+  "Read aloud from the cursor position using Piper TTS (neural voices)."
   (interactive)
   (let* ((raw-text (read-aloud-get-text))
          (text (when raw-text raw-text)))
@@ -147,7 +154,7 @@
       (message "No text to read"))))
 
 (defun my/toggle-read-aloud-fancy ()
-  "Toggle reading aloud using Edge TTS."
+  "Toggle reading aloud using Piper TTS (neural voices)."
   (interactive)
   (if (and read-aloud-process (process-live-p read-aloud-process))
       (progn
