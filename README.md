@@ -1,13 +1,13 @@
 # my-espeak
 
-Text-to-speech integration for Emacs using eSpeak and Piper (neural TTS).
+Text-to-speech integration for Emacs using eSpeak and Edge TTS (neural voices).
 
 Demo: https://youtube.com/shorts/M2eQxH-Lksk?feature=share
 
 ## Features
 
 - **eSpeak Integration** - Fast, lightweight text-to-speech (F9)
-- **Piper TTS** - High-quality neural voices, offline and fast (F10)
+- **Edge TTS** - High-quality neural voices from Microsoft (F10)
 - **PDF Support** - Read PDF text aloud from cursor or selection
 - **Smart Text Processing** - Handles hyphenated words, ligatures, and footnotes
 - **Toggle Controls** - Easy start/stop with keyboard shortcuts
@@ -33,8 +33,7 @@ Demo: https://youtube.com/shorts/M2eQxH-Lksk?feature=share
 - `espeak` - For basic text-to-speech
 
 **Optional / Fancy (recommended):**
-- `piper-tts` - Modern neural TTS with natural voices. Install via `pip install --user piper-tts`.
-- Voice model - Download automatically on first use or manually from [Piper voices](https://huggingface.co/rhasspy/piper-voices/tree/main/en/en_US)
+- `edge-tts` - Neural TTS with natural voices. Install via `pip install --user edge-tts`.
 - Audio player: `paplay`, `ffplay`, `mplayer`, `vlc`, or `aplay` (one of these is required)
 
 ## Usage
@@ -42,9 +41,9 @@ Demo: https://youtube.com/shorts/M2eQxH-Lksk?feature=share
 ### Basic Commands
 
 - `F9` - Toggle eSpeak reading (fast, lightweight)
-- `F10` - Toggle Fancy reading (Piper neural TTS) (natural-sounding, offline)
+- `F10` - Toggle Fancy reading (Edge TTS neural voices)
 
-Both commands read from cursor position or selected text in any buffer, including PDFs. The fancy option uses Piper for modern neural voices with natural pronunciation and no network dependency.
+Both commands read from cursor position or selected text in any buffer, including PDFs.
 
 ## Optional: PDF OCR-Based Reading
 
@@ -82,7 +81,7 @@ The OCR functionality depends on [screenshot-ocr](https://github.com/emacselemen
 ### OCR Commands (in pdf-view-mode)
 
 - `O` - Select region with mouse, OCR it, read with eSpeak
-- `C-c o` - Select region with mouse, OCR it, read with Piper TTS
+- `C-c o` - Select region with mouse, OCR it, read with Edge TTS
 
 These commands let you visually select a region (including single columns in multi-column layouts), then OCR and read that specific area.
 
@@ -91,42 +90,29 @@ These commands let you visually select a region (including single columns in mul
 ### TTS Options
 
 - `F9` (default): eSpeak — fast, offline, lightweight.
-- `F10` (fancy): Piper — modern neural TTS with natural-sounding voices; completely offline.
+- `F10` (fancy): Edge TTS — neural voices from Microsoft; requires internet connection.
 
-For other options, consider `festival` or `spd-say` for alternatives.
+### Example: Setup Edge TTS
 
-### Example: Setup Piper TTS
-
-Install Piper and download a voice model:
+Install Edge TTS:
 
 ```bash
-pip install --user piper-tts
-
-# Download a natural voice model
-mkdir -p ~/.local/share/piper/voices
-cd ~/.local/share/piper/voices
-wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx
-wget https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+pip install --user edge-tts
 
 # Test it
-echo "Hello world" | python3 -m piper -m en_US-lessac-medium.onnx -f /tmp/test.wav && paplay /tmp/test.wav
+edge-tts -t "Hello world" --write-media /tmp/test.mp3 && paplay /tmp/test.mp3
 ```
-
-### Notes
-
-- Piper is completely offline and uses modern neural networks for natural-sounding speech.
-- For long texts that exceed online TTS service limits, the code may split or fall back to `espeak`.
 
 ## How It Works
 
 1. **Text Extraction** - Gets text from cursor/selection or entire PDF page
 2. **Text Cleaning** - Joins hyphenated words, removes ligatures and footnotes
-3. **Speech Synthesis** - Sends to eSpeak, Piper, or other configured TTS engine
+3. **Speech Synthesis** - Sends to eSpeak or Edge TTS
 4. **Playback** - Reads aloud with progress tracking
 
 ## Files
 
-- `my-espeak.el` - Main TTS module (eSpeak and Piper)
+- `my-espeak.el` - Main TTS module (eSpeak and Edge TTS)
 - `pdf-ocr-espeak.el` - Optional OCR-based PDF reading
 - `older/` - Previous versions and experimental scripts
 
