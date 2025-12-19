@@ -2,6 +2,8 @@
 
 Text-to-speech integration for Emacs using eSpeak and Piper (neural TTS).
 
+Demo: https://youtube.com/shorts/M2eQxH-Lksk?feature=share
+
 ## Features
 
 - **eSpeak Integration** - Fast, lightweight text-to-speech (F9)
@@ -122,14 +124,12 @@ echo "Hello world" | python3 -m piper -m en_US-lessac-medium.onnx -f /tmp/test.w
 3. **Speech Synthesis** - Sends to eSpeak, Piper, or other configured TTS engine
 4. **Playback** - Reads aloud with progress tracking
 
-## Author
+## Files
 
-Author: Raoul Comninos
+- `my-espeak.el` - Main TTS module (eSpeak and Piper)
+- `pdf-ocr-espeak.el` - Optional OCR-based PDF reading
+- `older/` - Previous versions and experimental scripts
 
 ## License
 
 MIT
-
-If you find this project helpful, consider supporting it!
-
-[Donate via PayPal](https://www.paypal.com/paypalme/revrari)
